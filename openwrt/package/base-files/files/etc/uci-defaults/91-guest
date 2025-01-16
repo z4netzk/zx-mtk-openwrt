@@ -1,0 +1,15 @@
+#!/bin/sh
+
+. /lib/functions/uci-defaults.sh
+. /lib/functions/wtinfo.sh
+
+wan_mac=$(wtinfo_get_wan_mac)
+
+wisp0_ifname=$(uci -q get wireless.guest0.ifname)
+wisp1_ifname=$(uci -q get wireless.guest1.ifname)
+lan_netmask=$(uci -q get network.lan.netmask)
+
+ucidef_set_lede_guest "192.168.89.1" "$lan_netmask" "$wisp0_ifname $wisp1_ifname" "0" "$wan_mac"
+
+uci commit network
+

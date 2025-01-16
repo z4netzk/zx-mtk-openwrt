@@ -1,0 +1,42 @@
+#!/bin/sh
+
+(
+	flock 302
+
+	trap clean_flock INT TERM EXIT KILL STOP ABRT QUIT ALRM
+	clean_flock() {
+		flock -u 302
+	}
+
+	. /usr/share/libubox/jshn.sh
+
+	case "$ACTION" in
+	released)
+		breath_led=$(uci -q get lede.system.breath_led)
+		if [ "$breath_led" == "0" ]; then
+			uci set lede.system.breath_led=1
+
+			inet_diag=$(ubus call wtmonitor diagnose)
+			json_load "$inet_diag"
+			json_get_var inet_status inet_status
+
+			if [ "$inet_status" == "0" ]; then
+				lede_led "blue" "on"
+				lede_led "red" "off"
+			else
+				lede_led "blue" "off"
+				lede_led "red" "on"
+			fi
+		else
+			uci set lede.system.breath_led=0
+			lede_led "blue" "off"
+			lede_led "red" "off"
+		fi
+		uci commit lede
+	;;
+	esac
+) 302>/var/lock/button-rfkill.lock
+
+rm -rf /var/lock/button-rfkill.lock
+
+return 0

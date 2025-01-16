@@ -1,0 +1,14 @@
+#!/bin/sh
+
+. /lib/functions/leds.sh
+. /lib/functions/uci-defaults.sh
+
+board_config_update
+
+ucidef_set_led_netdev "lan" "lan" "lede:blue:lan" "eth1"
+ucidef_set_led_netdev "lan2" "lan2" "lede:blue:lan2" "lan2"
+ucidef_set_led_netdev "lan3" "lan3" "lede:blue:lan3" "lan3"
+
+board_config_flush
+
+exit 0

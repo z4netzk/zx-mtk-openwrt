@@ -1,0 +1,26 @@
+--- a/htpdate.c
++++ b/htpdate.c
+@@ -75,6 +75,9 @@
+ static int		logmode = 0;
+ static time_t	gmtoffset;
+ 
++static void htpdate_save() {
++	system("/etc/init.d/htpdate save 0");
++}
+ 
+ /* Insertion sort is more efficient (and smaller) than qsort for small lists */
+ static void insertsort( int a[], int length ) {
+@@ -338,7 +341,12 @@
+ 			printlog( 1, "seteuid()" );
+ 			exit(1);
+ 		} else {
+-			return( settimeofday(&timeofday, NULL) );
++			if (settimeofday(&timeofday, NULL) == 0) {
++				htpdate_save();
++				return 0;
++			} else {
++				return -1;
++			}
+ 		}
+ 
+ 	case 3:					/* Set frequency, but first an adjust */

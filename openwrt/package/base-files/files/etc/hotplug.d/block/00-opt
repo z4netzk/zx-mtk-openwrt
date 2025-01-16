@@ -1,0 +1,26 @@
+#!/bin/sh
+
+. /lib/functions.sh
+
+blkdev=`dirname $DEVPATH`
+device=`basename $DEVPATH`
+
+case "$device" in
+"mmcblk0p7")
+	mount_point="/opt"
+	case "$ACTION" in
+	add)
+		ID_FS_TYPE=""
+		ID_FS_UUID=""
+		dev_path="/dev/$device"
+
+		logger -t "storage" "start with $dev_path"
+		eval `blkid -o udev $dev_path`
+
+		mkdir -p $mount_point
+		mount -o noatime $dev_path $mount_point
+		;;
+	esac
+	;;
+esac
+

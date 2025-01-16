@@ -1,0 +1,10 @@
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -2386,6 +2386,7 @@
+ 	unsigned long flags;
+ 
+ 	dev_err (hcd->self.controller, "HC died; cleaning up\n");
++	panic("HC died; cleaning up");
+ 
+ 	spin_lock_irqsave (&hcd_root_hub_lock, flags);
+ 	clear_bit(HCD_FLAG_RH_RUNNING, &hcd->flags);

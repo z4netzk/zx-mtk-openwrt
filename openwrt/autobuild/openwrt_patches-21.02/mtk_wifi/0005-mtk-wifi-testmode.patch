@@ -1,0 +1,13 @@
+diff --git a/package/base-files/files/etc/init.d/boot b/package/base-files/files/etc/init.d/boot
+index 749d9e9..097e571 100755
+--- a/package/base-files/files/etc/init.d/boot
++++ b/package/base-files/files/etc/init.d/boot
+@@ -39,6 +39,8 @@ boot() {
+ 	grep -q pstore /proc/filesystems && /bin/mount -o noatime -t pstore pstore /sys/fs/pstore
+ 	[ "$FAILSAFE" = "true" ] && touch /tmp/.failsafe
+ 
++	[ -f /etc/hotplug.d/firmware/12-mtk-wifi-testmode ] && sh /etc/hotplug.d/firmware/12-mtk-wifi-testmode
++
+ 	/sbin/kmodloader
+ 
+ 	[ ! -f /etc/config/wireless ] && {

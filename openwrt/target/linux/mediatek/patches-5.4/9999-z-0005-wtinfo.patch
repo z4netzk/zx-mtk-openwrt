@@ -1,0 +1,11 @@
+--- a/drivers/mtd/Makefile
++++ b/drivers/mtd/Makefile
+@@ -5,7 +5,7 @@
+ 
+ # Core functionality.
+ obj-$(CONFIG_MTD)		+= mtd.o
+-mtd-y				:= mtdcore.o mtdsuper.o mtdconcat.o mtdpart.o mtdchar.o
++mtd-y				:= mtdcore.o mtdsuper.o mtdconcat.o mtdpart.o mtdchar.o mtd_wtinfo.o
+ 
+ obj-y				+= parsers/
+ 

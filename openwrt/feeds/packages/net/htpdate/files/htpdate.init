@@ -1,0 +1,92 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=60
+STOP=90
+BIN=htpdate
+DEFAULT=/etc/default/$BIN
+RUN_D=/var/run
+PID_F=$RUN_D/$BIN.pid
+
+EXTRA_COMMANDS='save'
+
+start() {
+	local disabled=$(uci get htpdate.htpdate.disabled)
+
+	htpdate_stop
+
+	[ $disabled -ne 0 ] || {
+		[ -f $DEFAULT ] && . $DEFAULT
+		mkdir -p $RUN_D
+		$BIN -l -s -t -D $OPTIONS
+	}
+}
+
+htpdate_stop() {
+	[ -f $PID_F ] && {
+		kill -9 $(cat $PID_F)
+		rm -rf $PID_F
+	}
+}
+
+stop() {
+	htpdate_stop
+}
+
+save() {
+	local local_time=$(date '+%s')
+	date -k
+	# set to rtc
+	hwclock -w
+
+	uci set htpdate.htpdate.sync_time=$local_time
+	uci commit htpdate
+	if [ "$1" != "1" ]; then
+		# call hotplug
+		time-hotplug stratum
+	fi
+}
+
+boot() {
+	local sync_t=$(uci get htpdate.htpdate.sync_time)
+	local rom_buildtime=$(cat /rom/etc/openwrt_build)
+
+	local t_year=${rom_buildtime:0:4}
+	local t_mon=${rom_buildtime:4:2}
+	local t_day=${rom_buildtime:6:2}
+	local t_h=${rom_buildtime:9:2}
+	local t_m=${rom_buildtime:11:2}
+	local t_s=${rom_buildtime:13:2}
+	local t_build_time="$t_year-$t_mon-$t_day $t_h:$t_m:$t_s"
+
+	test -n "$t_build_time" && date -s "$t_build_time"
+
+	local t_dtime=$(date +%s)
+
+	[ $sync_t -ne 0 ] && {
+		date -s "$(date -D %s -d $sync_t '+%Y-%m-%d %T')"
+		local s_date_time=$(date +%s)
+
+		if [ $t_time -gt $s_date_time ]; then
+			echo "use rom build time" >/dev/console
+			date -s "$(date -D %s -d $t_dtime '+%Y-%m-%d %T')"
+		fi
+	}
+
+	if [ -e /dev/rtc0 ]; then
+		local date_time=$(date +%s)
+		hwclock -s
+
+		local h_date_time=$(date +%s)
+
+		if [ $date_time -gt $h_date_time ]; then
+			echo "hwclock too old, set rtc time" > /dev/console
+			date -s "$(date -D %s -d $date_time '+%Y-%m-%d %T')"
+			hwclock -w
+		else
+			echo "use rtc time" > /dev/console
+		fi
+	fi
+
+	start
+}

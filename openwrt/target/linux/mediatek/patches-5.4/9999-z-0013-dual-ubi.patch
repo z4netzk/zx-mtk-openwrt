@@ -1,0 +1,35 @@
+--- a/drivers/mtd/parsers/ofpart_core.c
++++ b/drivers/mtd/parsers/ofpart_core.c
+@@ -37,6 +37,9 @@
+ {
+ 	return of_get_property(pp, "compatible", NULL);
+ }
++
++extern unsigned char wt_get_bootpart(void);
++void wtoem_parse(struct mtd_info *master, loff_t offset);
+ 
+ static int parse_fixed_partitions(struct mtd_info *master,
+ 				  const struct mtd_partition **pparts,
+@@ -136,7 +138,21 @@
+ 		partname = of_get_property(pp, "label", &len);
+ 		if (!partname)
+ 			partname = of_get_property(pp, "name", &len);
+-		parts[i].name = partname;
++
++		if (!strcmp(partname, "woem")) {
++			wtoem_parse(master, parts[i].offset);
++		}
++
++		if (wt_get_bootpart() == 1) {
++			if (!strcmp(partname, "ubi")) {
++				printk("adjust ubi\n");
++				parts[i].offset = parts[i].offset + parts[i].size;
++			} else if (!strcmp(partname, "ubi2")) {
++				printk("adjust ubi2\n");
++				parts[i].offset = parts[i].offset - parts[i].size;
++			}
++		}
++		parts[i].name = partname;
+ 
+ 		if (of_get_property(pp, "read-only", &len))
+ 			parts[i].mask_flags |= MTD_WRITEABLE;

@@ -1,0 +1,3 @@
+config guide 'guide'
+	option status '1'
+

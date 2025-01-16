@@ -1,0 +1,21 @@
+#!/bin/sh
+
+. /usr/share/libubox/jshn.sh
+
+mac_str=$1
+country=$2
+board=$3
+
+json_init
+json_add_string mac "$mac_str"
+json_add_string country "$country"
+json_add_string board "$board"
+
+wtinfo -s "$(json_dump)"
+mac_new=$(wtinfo -g mac)
+
+if [ "$mac_new" == "$mac_str" ]; then
+	echo "ok"
+else
+	echo "failed"
+fi

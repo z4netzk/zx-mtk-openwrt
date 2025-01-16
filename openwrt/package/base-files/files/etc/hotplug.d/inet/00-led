@@ -1,0 +1,28 @@
+#!/bin/sh
+
+breath_led=$(uci -q get lede.system.breath_led)
+
+case "$ACTION" in
+	"online")
+	logger -t "internet" "detect $ACTION"
+	if [ "$breath_led" == "0" ]; then
+		lede_led "red" "off"
+		lede_led "blue" "off"
+	else
+		lede_led "red" "off"
+		lede_led "blue" "on"
+	fi
+	/etc/init.d/sysntpd restart
+	;;
+	"offline" | "coffline")
+	logger -t "internet" "detect $ACTION"
+	if [ "$breath_led" == "0" ]; then
+		lede_led "red" "off"
+		lede_led "blue" "off"
+	else
+		lede_led "blue" "off"
+		lede_led "red" "on"
+	fi
+	;;
+	*);;
+esac

@@ -1,0 +1,20 @@
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -705,6 +705,7 @@
+   .driver_info = RSVD(0) | RSVD(1)},
+   /*zqy add for support srm811 end*/
+   /*[MEIG-zhaopf-2019-11-04]add for meig modem supported }*/
++	{ USB_DEVICE(0x3505, 0x1001) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_COLT) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA_LIGHT) },
+@@ -2397,6 +2398,9 @@
+     }
+   }
+ #endif
++	if ((serial->dev->descriptor.idVendor == cpu_to_le16(0x3505)) && (serial->dev->descriptor.idProduct == cpu_to_le16(0x1001)) && (iface_desc->bInterfaceNumber == 6)) {
++		return -ENODEV;
++	}
+ 
+ 	/* Store the device flags so we can use them during attach. */
+ 	usb_set_serial_data(serial, (void *)device_flags);

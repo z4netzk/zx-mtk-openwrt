@@ -1,0 +1,26 @@
+#!/bin/sh
+
+(
+	flock 400
+	trap clean_flock INT TERM EXIT KILL STOP ABRT QUIT ALRM
+	clean_flock() {
+		flock -u 400
+	}
+
+	overlay_type=$(mount | grep "on /overlay" | awk '{print $5}')
+
+	sync
+	case "$overlay_type" in
+	"jffs2")
+		/sbin/jffs2reset -y
+		;;
+	*)
+		rm -rf /overlay/*
+		mount -o remount /overlay / 2>&-
+		;;
+	esac
+	sync
+)400>/var/lock/firstboot.lock
+
+rm -rf /var/lock/firstboot.lock
+

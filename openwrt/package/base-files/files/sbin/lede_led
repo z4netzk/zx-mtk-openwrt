@@ -1,0 +1,7 @@
+#!/bin/sh
+
+. /lib/functions/leds.sh
+
+lede_led_path="lede:blue:""$1"
+
+led_$2 $lede_led_path $3 $4

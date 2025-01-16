@@ -1,0 +1,41 @@
+#!/bin/sh
+
+. /lib/functions.sh
+. /lib/functions/leds.sh
+
+all_led_blink() {
+	ls_file=$(ls -l /sys/class/leds)
+	for filename in $ls_file
+	do
+		led_timer "$filename" 300 300
+	done
+}
+
+(
+	flock 300
+
+	trap clean_flock INT TERM EXIT KILL STOP ABRT QUIT ALRM
+	clean_flock() {
+		flock -u 300
+	}
+
+	OVERLAY="$( grep ' /overlay ' /proc/mounts )"
+
+	case "$ACTION" in
+	released)
+		if [ "$SEEN" -gt 4 -a -n "$OVERLAY" ]
+		then
+			echo "FACTORY RESET" > /dev/console
+			for CONF in /etc/reset.d/*; do
+				[ -x "$CONF" ] && $CONF
+			done
+			all_led_blink
+			firstboot && reboot -f &
+		fi
+	;;
+	esac
+) 300>/var/lock/button-reset.lock
+
+rm -rf /var/lock/button-reset.lock
+
+return 0

@@ -1,0 +1,44 @@
+#!/bin/sh
+
+. /lib/functions.sh
+. /lib/functions/uci-defaults.sh
+. /lib/functions/system.sh
+. /lib/functions/wtinfo.sh
+
+mediatek_setup_interfaces()
+{
+	local board="$1"
+
+	case $board in
+	*fpga*)
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" \
+			"0:lan" "1:lan" "2:lan" "3:lan" "4:wan" "6u@eth0" "5u@eth1"
+		;;
+	*gsw*)
+		ucidef_set_interfaces_lan_wan "eth0" "eth1"
+		ucidef_add_switch "switch0" \
+			"0:lan" "1:lan" "2:lan" "3:lan" "4:lan" "5:lan" "6u@eth0"
+		;;
+	*)
+		ucidef_set_interfaces_lan_wan "lan0 lan1 lan2 lan3 lan4 lan5" eth1
+		;;
+	esac
+}
+
+mediatek_setup_macs()
+{
+	lan_mac=$(wtinfo_get_mac)
+	wan_mac=$(wtinfo_get_wan_mac)
+
+	ucidef_set_interface_macaddr "lan" "$lan_mac"
+	ucidef_set_interface_macaddr "wan" "$wan_mac"
+}
+
+board_config_update
+board=$(board_name)
+mediatek_setup_interfaces $board
+mediatek_setup_macs $board
+board_config_flush
+
+exit 0

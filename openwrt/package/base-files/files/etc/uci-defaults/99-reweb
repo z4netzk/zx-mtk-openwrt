@@ -1,0 +1,26 @@
+#!/bin/sh
+
+. /lib/functions/uci-defaults.sh
+
+ucidef_set_reweb() {
+	local cfg="led_$1"
+	local name=$2
+	local sysfs=$3
+	local dev=$4
+
+	uci -q get firewall.reweb && return 0
+
+	uci batch <<EOF
+set firewall.reweb='rule'
+set firewall.reweb.name='reweb'
+set firewall.reweb.src='wan'
+set firewall.reweb.proto='tcp'
+set firewall.reweb.dest_port='80'
+set firewall.reweb.target='ACCEPT'
+set firewall.reweb.enabled='0'
+EOF
+	uci commit firewall
+}
+
+ucidef_set_reweb
+

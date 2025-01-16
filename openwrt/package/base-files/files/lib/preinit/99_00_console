@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+
+console_login_fixup() {
+	if [ "$1" -eq 0 ]; then
+		# disable console login
+		sed -i "/::respawnlate:/d" /etc/inittab
+		sync
+	else
+		# enable console login
+		local initline="::respawnlate:"
+
+		grep -qs "^$initline" /etc/inittab || {
+			cp /rom/etc/inittab /etc/inittab
+			sync
+		}
+	fi
+}
+
+#
+# default disable console login
+#
+console_login() {
+	if [ -f /etc/wt_release_rom ]; then
+		console_login_fixup "0"
+	else
+		console_login_fixup "1"
+	fi
+}
+
+boot_hook_add preinit_main console_login

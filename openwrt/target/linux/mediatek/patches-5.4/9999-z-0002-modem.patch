@@ -1,0 +1,146 @@
+--- a/drivers/usb/serial/option.c
++++ b/drivers/usb/serial/option.c
+@@ -82,6 +82,20 @@
+ #define HUAWEI_PRODUCT_K3765			0x1465
+ #define HUAWEI_PRODUCT_K4605			0x14C6
+ #define HUAWEI_PRODUCT_E173S6			0x1C07
++
++/*[MEIG-zhaopf-2019-11-04]add for meig modem supported {*/
++#define MEIG_VENDOR_ID            0x2DEE
++#define MEIG_PRODUCT_SRM815       0x4D22
++#define MEIG_PRODUCT_SRM815_ECM   0x4D23
++#define MEIG_PRODUCT_SLM790       0x4D20
++/*zqy add for support srm811 start*/
++#define MEIG_PRODUCT_SRM811_ECM   0x4D50
++#define MEIG_PRODUCT_SRM811_RNDIS   0x4D51
++#define MEIG_PRODUCT_SRM811_NCM     0x4D52
++/*zqy add for support srm811 end*/
++#define MEIG_QCM_VENDOR_ID          0x05C6
++#define MEIG_QCM_PRODUCT_SLM750_SRM815_SLM868 0xF601
++/*[MEIG-zhaopf-2019-11-04]add for meig modem supported }*/
+ 
+ #define QUANTA_VENDOR_ID			0x0408
+ #define QUANTA_PRODUCT_Q101			0xEA02
+@@ -614,6 +628,83 @@
+ 
+ 
+ static const struct usb_device_id option_ids[] = {
++  { USB_DEVICE(0x2C7C, 0x0125) }, /* Quectel EC20 R2.0/EC20 R2.1/EC25/EG25-G/EM05 */
++  { USB_DEVICE(0x2C7C, 0x0121) }, /* Quectel EC21/EG21-G */
++  { USB_DEVICE(0x2C7C, 0x0191) }, /* Quectel EG91 */
++  { USB_DEVICE(0x2C7C, 0x0195) }, /* Quectel EG95 */
++  { USB_DEVICE(0x2C7C, 0x0306) }, /* Quectel EG06/EP06/EM06 */
++  { USB_DEVICE(0x2C7C, 0x0512) }, /* Quectel EG12/EM12/EG18 */
++  { USB_DEVICE(0x2C7C, 0x0296) }, /* Quectel BG96 */
++  { USB_DEVICE(0x2C7C, 0x0700) }, /* Quectel BG95/BG77/BG600L-M3/BC69 */
++  { USB_DEVICE(0x2C7C, 0x0435) }, /* Quectel AG35 */
++  { USB_DEVICE(0x2C7C, 0x0415) }, /* Quectel AG15 */
++  { USB_DEVICE(0x2C7C, 0x0452) }, /* Quectel AG520R */
++  { USB_DEVICE(0x2C7C, 0x0455) }, /* Quectel AG550R */
++  { USB_DEVICE(0x2C7C, 0x0620) }, /* Quectel EG20 */
++  { USB_DEVICE(0x2C7C, 0x0800) }, /* Quectel RG500Q/RM500Q/RG510Q/RM510Q */
++  { USB_DEVICE_AND_INTERFACE_INFO(0x2c7c, 0x8101, 0xff, 0x02, 0x12) }, /* Quectel RG801H */
++  { USB_DEVICE_AND_INTERFACE_INFO(0x2c7c, 0x8101, 0xff, 0x03, 0x12) },
++  { USB_DEVICE_AND_INTERFACE_INFO(0x2c7c, 0x8101, 0xff, 0x06, 0x12) },
++  { USB_DEVICE_AND_INTERFACE_INFO(0x2c7c, 0x8101, 0xff, 0x02, 0x14) },
++  { USB_DEVICE_AND_INTERFACE_INFO(0x2c7c, 0x8101, 0xff, 0x02, 0x13) },
++  { USB_DEVICE_AND_INTERFACE_INFO(0x2c7c, 0x8101, 0xff, 0x02, 0x03) },
++  { USB_DEVICE_AND_INTERFACE_INFO(0x2c7c, 0x8101, 0xff, 0x02, 0x0a) },
++  { USB_DEVICE_AND_INTERFACE_INFO(0x2c7c, 0x8101, 0xff, 0x02, 0x06) },
++  { USB_DEVICE_AND_INTERFACE_INFO(0x2c7c, 0x8101, 0xff, 0x02, 0x01) },
++  { USB_DEVICE_AND_INTERFACE_INFO(0x2c7c, 0x0900, 0xff, 0x00, 0x00) }, /* Quectel RG500U */
++  { USB_DEVICE(0x2C7C, 0x0801) }, /* Quectel X62 */
++  /*start add by fibocom*/
++  /*start FM150/FG150/FM100/FM101/FG101/FM130/FM160/NL95X*/
++  { USB_DEVICE(0x2cb7, 0x0104) , .driver_info = RSVD(4) | RSVD(5)},
++  { USB_DEVICE(0x2cb7, 0x0105) , .driver_info = RSVD(4) | RSVD(5)|RSVD(6)},
++  { USB_DEVICE(0x2cb7, 0x0106) , .driver_info = RSVD(3) | RSVD(4)},
++  { USB_DEVICE(0x2cb7, 0x0109) , .driver_info = RSVD(2) } ,
++  { USB_DEVICE(0x2cb7, 0x010A) , .driver_info = RSVD(2) | RSVD(3)},
++  { USB_DEVICE(0x2cb7, 0x010b) , .driver_info = RSVD(0) | RSVD(1)|RSVD(4)},
++  { USB_DEVICE(0x2cb7, 0x010c) , .driver_info = RSVD(4) | RSVD(5)|RSVD(6)},
++  { USB_DEVICE(0x2cb7, 0x010d) , .driver_info = RSVD(4) | RSVD(5)|RSVD(6)},
++  { USB_DEVICE(0x2cb7, 0x010e) , .driver_info = RSVD(4) | RSVD(5)|RSVD(6)},
++  { USB_DEVICE(0x2cb7, 0x010f) , .driver_info = RSVD(0) | RSVD(1)},
++  { USB_DEVICE(0x2cb7, 0x0110) , .driver_info = RSVD(0) | RSVD(1)},
++  { USB_DEVICE(0x2cb7, 0x0111) , .driver_info = RSVD(0) | RSVD(1)},
++  { USB_DEVICE(0x2cb7, 0x0105) , .driver_info = RSVD(4) },
++  { USB_DEVICE(0x1508, 0x1001) , .driver_info = RSVD(4) | RSVD(5)},
++  { USB_DEVICE(0x1508, 0x1001) , .driver_info = RSVD(4) | RSVD(5)|RSVD(6)},
++  { USB_DEVICE(0x05C6, 0x9025) , .driver_info = RSVD(3) } ,
++  { USB_DEVICE(0x1508, 0x1000) , .driver_info = RSVD(2) } ,
++  { USB_DEVICE(0x05C6, 0x90B6) , .driver_info = RSVD(0) | RSVD(1)|RSVD(4)},
++  { USB_DEVICE(0x1508, 0x1001) , .driver_info = RSVD(4) } ,
++  /*start FG650 & FM650*/
++  { USB_DEVICE(0x2CB7, 0x0A05) , .driver_info = RSVD(0) | RSVD(1) },
++  { USB_DEVICE(0x2CB7, 0x0A06) , .driver_info = RSVD(0) | RSVD(1) },
++  { USB_DEVICE(0x2CB7, 0x0A07) , .driver_info = RSVD(0) | RSVD(1) },
++  { USB_DEVICE(0x2CB7, 0x0A05) , .driver_info = RSVD(0) | RSVD(1) | RSVD(6)},
++  { USB_DEVICE(0x2CB7, 0x0A06) , .driver_info = RSVD(0) | RSVD(1) | RSVD(6)},
++  { USB_DEVICE(0x2CB7, 0x0A07) , .driver_info = RSVD(0) | RSVD(1) | RSVD(6)}, /*end FG650 & FM650*/
++  /*start FM350*/
++  { USB_DEVICE(0x0E8D, 0x7126) , .driver_info = RSVD(0) | RSVD(1) | RSVD(7)},
++  { USB_DEVICE(0x0E8D, 0x7127)}, /*end FM350*/
++  /*end add by fibocom*/
++  /*[MEIG-zhaopf-2019-11-04]add for meig modem supported {*/
++  { USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_SRM815),
++  .driver_info = RSVD(4) | RSVD(5) },
++  { USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_SRM815_ECM),
++  .driver_info = RSVD(4) | RSVD(5) },
++  { USB_DEVICE(MEIG_QCM_VENDOR_ID, MEIG_QCM_PRODUCT_SLM750_SRM815_SLM868),
++  .driver_info = RSVD(4) | RSVD(5)| RSVD(6) | RSVD(7) | RSVD(8) },
++  { USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_SLM790),
++  .driver_info = RSVD(0) | RSVD(5) | RSVD(6) | RSVD(7) },
++  /*zqy add for support srm811 start*/
++  { USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_SRM811_ECM),
++  .driver_info = RSVD(0) | RSVD(1) | RSVD(7) | RSVD(8) | RSVD(9)},
++  { USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_SRM811_RNDIS),
++  .driver_info = RSVD(0) | RSVD(1) | RSVD(7) | RSVD(8) | RSVD(9)},
++  { USB_DEVICE(MEIG_VENDOR_ID, MEIG_PRODUCT_SRM811_NCM),
++  .driver_info = RSVD(0) | RSVD(1) | RSVD(7) | RSVD(8) | RSVD(9)},
++  { USB_DEVICE(MEIG_VENDOR_ID, 0x4D38),
++  .driver_info = RSVD(0) | RSVD(1)},
++  /*zqy add for support srm811 end*/
++  /*[MEIG-zhaopf-2019-11-04]add for meig modem supported }*/
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_COLT) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA) },
+ 	{ USB_DEVICE(OPTION_VENDOR_ID, OPTION_PRODUCT_RICOLA_LIGHT) },
+@@ -2293,6 +2382,20 @@
+ 	if (device_flags & NUMEP2 && iface_desc->bNumEndpoints != 2)
+ 		return -ENODEV;
+ 
++#if 1 //Added by Quectel
++  //Quectel modules’s interface 4 can be used as USB network device
++  if ((serial->dev->descriptor.idVendor == cpu_to_le16(0x2C7C)) && (serial->dev->descriptor.idProduct != cpu_to_le16(0x8101)) && (serial->dev->descriptor.idProduct != cpu_to_le16(0x0900))) {
++    //some interfaces can be used as USB Network device (ecm, rndis, mbim)
++    if (serial->interface->cur_altsetting->desc.bInterfaceClass != 0xFF) {
++      return -ENODEV;
++    }
++    //interface 4 can be used as USB Network device (qmi)
++    else if (serial->interface->cur_altsetting->desc.bInterfaceNumber >= 4) {
++     return -ENODEV;
++    }
++  }
++#endif
++
+ 	/* Store the device flags so we can use them during attach. */
+ 	usb_set_serial_data(serial, (void *)device_flags);
+ 
+--- a/drivers/usb/serial/usb_wwan.c
++++ b/drivers/usb/serial/usb_wwan.c
+@@ -481,6 +481,14 @@
+ 	if (intfdata->use_zlp && dir == USB_DIR_OUT)
+ 		urb->transfer_flags |= URB_ZERO_PACKET;
+ 
++	/*start add by fibocom*/
++	if (dir == USB_DIR_OUT) {
++		struct usb_device_descriptor *desc = &serial->dev->descriptor;
++		if (desc->idVendor == cpu_to_le16(0x2C7C) || desc->idVendor == cpu_to_le16(0x2cb7) || desc->idVendor == cpu_to_le16(0x2dee) || desc->idVendor == cpu_to_le16(0x0e8d))
++			urb->transfer_flags |= URB_ZERO_PACKET;
++	}
++	/*end add by fibocom*/
++
+ 	return urb;
+ }
+ 
+

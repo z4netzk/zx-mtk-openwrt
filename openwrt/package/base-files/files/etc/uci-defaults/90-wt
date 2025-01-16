@@ -1,0 +1,47 @@
+#!/bin/sh
+
+. /lib/functions/uci-defaults.sh
+. /lib/functions/wtinfo.sh
+
+board=$(wtinfo_board_name)
+lede_board=$(wtinfo_get_board)
+mac=$(wtinfo_get_mac)
+w_mac=$(wtinfo_get_wan_mac)
+country=$(wtinfo_get_country)
+lede_mac=$(echo $mac | sed 's/://g')
+lede_wan_mac=$(echo $w_mac | sed 's/://g')
+
+# defualt is root/admin
+ucidef_set_lede_password "root" "admin"
+
+ucidef_set_lede_system "$lede_board" "router" "5" "7" "$lede_mac" "$lede_wan_mac" "$country" "WT" "#"
+
+uci -q set lede.ota='ota'
+uci -q set lede.ota.force='0'
+
+case "$country" in
+"CN")
+	uci -q get luci.main.lang_set && return 0
+
+	uci -q set luci.main.lang='zh_cn'
+	uci -q set system.@system[0].timezone='CST-8'
+	uci -q set system.@system[0].zonename='Asia/Shanghai'
+	uci -q set luci.main.lang_set='1'
+	;;
+*)
+	uci -q get luci.main.lang_set && return 0
+
+	uci -q set luci.main.lang='en'
+	uci -q set system.@system[0].timezone='UTC'
+	uci -q set system.@system[0].zonename='UTC'
+	uci -q set luci.main.lang_set='1'
+	;;
+esac
+
+uci -q set rtty.rtty.description="$board"
+
+uci commit system
+uci commit luci
+uci commit lede
+
+

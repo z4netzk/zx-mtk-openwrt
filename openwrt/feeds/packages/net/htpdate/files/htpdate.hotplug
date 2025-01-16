@@ -1,0 +1,7 @@
+#!/bin/sh
+
+[ "$ACTION" = "ifup" ] && {
+	if [ "$INTERFACE" != "lan" ]; then
+		/etc/init.d/htpdate restart
+	fi
+}

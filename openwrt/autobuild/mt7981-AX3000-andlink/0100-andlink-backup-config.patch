@@ -1,0 +1,37 @@
+--- a/package/base-files/files/etc/init.d/boot	2022-11-09 17:47:35.670676000 +0800
++++ b/package/base-files/files/etc/init.d/boot	2022-11-09 17:17:45.379828000 +0800
+@@ -51,7 +51,34 @@
+ 	/bin/config_generate
+ 	uci_apply_defaults
+ 	sync
++
++	result=`strings /sys/devices/virtual/ubi/ubi0/ubi0_*/name|grep backup`
++	[ -z $result ] && {
++        	ubimkvol /dev/ubi0 -s 2MiB -N backup
++	}
++
++	[ ! -d /mnt/backup ] && {
++		mkdir /mnt/backup
++ 	}
+
++	volume=""
++	for i in $(seq 0 5)
++	do
++   		name=`strings /sys/devices/virtual/ubi/ubi0/ubi0_$i/name`
++   		if [ $name == "backup" ]; then
++       			volume=ubi0_$i
++   		fi
++	done
++
++	[ $volume != "" ] && {
++		mount -t ubifs /dev/$volume /mnt/backup
++	}
++
+ 	# temporary hack until configd exists
+ 	/sbin/reload_config
++
++	[ -f /mnt/backup/config.tar.gz ] && {
++	    sysupgrade -r /mnt/backup/config.tar.gz
++	    rm /mnt/backup/config.tar.gz
++	}
+ }

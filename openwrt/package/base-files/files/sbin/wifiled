@@ -1,0 +1,10 @@
+#!/bin/sh
+
+wlan0_dis=$(uci -q get wireless.wlan0.disabled)
+wlan1_dis=$(uci -q get wireless.wlan1.disabled)
+
+if [ "$wlan0_dis" == "1" -a "$wlan1_dis" == "1" ]; then
+        lede_led wifi off
+else
+        lede_led wifi on
+fi

@@ -1,0 +1,7 @@
+config web domain
+	option names 'locallogin.com'
+
+config admin admin
+	option username 'root'
+	option password 'YWRtaW4='
+

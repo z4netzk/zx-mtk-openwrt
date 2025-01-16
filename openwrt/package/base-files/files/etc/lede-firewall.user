@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for FCONF in /etc/lede-firewall.d/*; do
+ 	[ -x "$FCONF" ] && $FCONF
+done
+

@@ -1,0 +1,59 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006 OpenWrt.org
+
+START=95
+
+set_vm_min_free() {
+	local vm_min_val=4096
+	local conntrack_max_val=16384
+	local frag_low_thresh frag_high_thresh
+
+	sync
+	echo 3 >/proc/sys/vm/drop_caches
+
+	mem="$(grep MemAvailable /proc/meminfo  | awk '{print $2}')"
+	if [ $mem -gt 262144 ]; then # > 256M
+		vm_min_val=16384
+		conntrack_max_val=32768
+	elif [ $mem -gt 131072 ]; then # > 128M
+		vm_min_val=8192
+		conntrack_max_val=24576
+	elif [ $mem -gt 65536 ]; then # > 64M
+		vm_min_val=8192
+	elif [ $mem -gt 32768 ]; then # >32 M
+		vm_min_val=4096
+	else
+		vm_min_val=2048
+		frag_low_thresh=393216
+		frag_high_thresh=524288
+	fi
+
+	sysctl -qw vm.min_free_kbytes="$vm_min_val"
+	sysctl -qw net.netfilter.nf_conntrack_max="$conntrack_max_val"
+
+	[ "$frag_low_thresh" ] && sysctl -qw \
+		net.ipv4.ipfrag_low_thresh="$frag_low_thresh" \
+		net.ipv4.ipfrag_high_thresh="$frag_high_thresh" \
+		net.ipv6.ip6frag_low_thresh="$frag_low_thresh" \
+		net.ipv6.ip6frag_high_thresh="$frag_high_thresh" \
+		net.netfilter.nf_conntrack_frag6_low_thresh="$frag_low_thresh" \
+		net.netfilter.nf_conntrack_frag6_high_thresh="$frag_high_thresh"
+}
+
+boot() {
+	mount_root done
+	rm -f /sysupgrade.tgz && sync
+
+	# process user commands
+	[ -f /etc/rc.local ] && {
+		sh /etc/rc.local
+	}
+
+	# set memory min free
+	set_vm_min_free
+
+	# set leds to normal state
+	. /etc/diag.sh
+	set_state done
+	/etc/init.d/firewall restart
+}
