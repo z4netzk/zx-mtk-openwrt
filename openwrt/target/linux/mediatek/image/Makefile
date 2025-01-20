@@ -202,6 +202,14 @@ define Image/Build/Profile/squashfs/DEVICE_ZX7981EM
 	$(call MtkNNSys,$(BIN_DIR)/ZX7981EM/ZX7981EM-sign,$(BIN_DIR)/ZX7981EM/ZX7981EM-ubi-orig.bin,$(BIN_DIR)/ZX7981EM/ZX7981EM-$(ROM_PREFIX)-sysupgrade.bin)
 endef
 
+define Image/Build/Profile/squashfs/DEVICE_ZX7981EC
+	@mkdir -p $(BIN_DIR)/ZX7981EC
+	# ubi
+	$(CP) $(BIN_DIR)/openwrt-mediatek-mt7981-ZX7981EC-squashfs-sysupgrade.bin $(BIN_DIR)/ZX7981EC/ZX7981EC-ubi-orig.bin
+	$(STAGING_DIR_HOST)/bin/wtsign -n "ZX7981EC" -i $(BIN_DIR)/ZX7981EC/ZX7981EC-ubi-orig.bin -o $(BIN_DIR)/ZX7981EC/ZX7981EC-sign -k $(TOPDIR)/rom-keys/wt.key
+	$(call MtkNNSys,$(BIN_DIR)/ZX7981EC/ZX7981EC-sign,$(BIN_DIR)/ZX7ZX7981EC981EM/ZX7981EC-ubi-orig.bin,$(BIN_DIR)/ZX7981EC/ZX7981EC-$(ROM_PREFIX)-sysupgrade.bin)
+endef
+
 define Image/Build
 	$(call Image/Build/$(1),$(1))
 	$(call Image/Build/Profile/$(1)/$(PROFILE),$(PROFILE))

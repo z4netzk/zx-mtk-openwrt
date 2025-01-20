@@ -33,6 +33,9 @@
   * ZX7981EM(5 *GE + 8GB EMMC + NVME SSD)<br>
     `make ZX7981EM_zx`
 
+  * ZX7981EC(5 *GE + 8GB EMMC + NVME SSD)<br>
+    `make ZX7981EC_zx`
+
   * ZX7986P(1 2.5G + 4 *GE + FAN + 128MB NAND)<br>
     `make ZX7986P_zx`
 

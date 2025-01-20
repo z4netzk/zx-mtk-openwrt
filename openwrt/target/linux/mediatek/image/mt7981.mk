@@ -266,3 +266,15 @@ define Device/ZX7981EM
 endef
 TARGET_DEVICES += ZX7981EM
 
+define Device/ZX7981EC
+  DEVICE_VENDOR := MediaTek
+  DEVICE_MODEL := ZX7981EC
+  DEVICE_DTS := ZX7981EC
+  SUPPORTED_DEVICES := ZX7981EC
+  DEVICE_DTS_DIR := $(DTS_DIR)/mediatek
+  DEVICE_PACKAGES := mkf2fs e2fsprogs blkid blockdev losetup kmod-fs-ext4 \
+         kmod-mmc kmod-fs-f2fs kmod-fs-vfat kmod-nls-cp437 \
+         kmod-nls-iso8859-1
+  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+endef
+TARGET_DEVICES += ZX7981EC
